@@ -13,7 +13,9 @@
   <!-- NAV -->
   <header class="nav">
     <div class="nav-inner">
-      <span class="logo">EIEI</span>
+      <a href="#" class="logo-link">
+        <img src="images/logo.png" alt="EIEI Logo" class="logo">
+      </a>
       <button class="menu-toggle" id="menuToggle">☰</button>
       <nav>
         <a href="#about">About</a>
@@ -108,6 +110,20 @@
   </div>
 </section>
 
+  <!-- GALLERY SECTION -->
+<section class="section gallery-section">
+  <h2>Image Gallery</h2>
+  <div class="gallery" id="galleryContainer">
+    <!-- Images will be loaded dynamically from admin uploads -->
+  </div>
+</section>
+
+<!-- FULLSCREEN IMAGE MODAL -->
+<div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreen()">
+  <span class="close-btn">&times;</span>
+  <img id="fullscreenImage" src="" alt="Fullscreen Image">
+</div>
+
   <!-- FAQ SECTION -->
 <section class="section faq-section">
   <h2>Frequently Asked Questions</h2>
@@ -158,6 +174,50 @@
 </footer>
 
 <script>
+  // Load gallery images from admin uploads
+  function loadGalleryImages() {
+    const galleryContainer = document.getElementById('galleryContainer');
+    const images = JSON.parse(localStorage.getItem('galleryImages') || '[]');
+    
+    if (images.length === 0) {
+      galleryContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">Gallery will be updated soon...</p>';
+      return;
+    }
+
+    galleryContainer.innerHTML = '';
+    images.forEach(image => {
+      const div = document.createElement('div');
+      div.className = 'gallery-item';
+      div.onclick = function() { openFullscreen(this); };
+      div.innerHTML = `<img src="${image.data}" alt="${image.name}">`;
+      galleryContainer.appendChild(div);
+    });
+  }
+
+  // Gallery fullscreen functions
+  function openFullscreen(element) {
+    const img = element.querySelector('img');
+    const modal = document.getElementById('fullscreenModal');
+    const fullscreenImg = document.getElementById('fullscreenImage');
+    
+    fullscreenImg.src = img.src;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeFullscreen() {
+    const modal = document.getElementById('fullscreenModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+  
+  // Close fullscreen on Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeFullscreen();
+    }
+  });
+
   // Enquiry form handler
   function handleEnquiry(event) {
     event.preventDefault();
@@ -194,6 +254,15 @@
 </script>
 
   <script src="script.js"></script>
+  <script>
+    // Load gallery images when page loads
+    document.addEventListener('DOMContentLoaded', loadGalleryImages);
+    
+    // Reload gallery if another tab updates it
+    window.addEventListener('storage', function() {
+      loadGalleryImages();
+    });
+  </script>
 </body>
 </html>
 
