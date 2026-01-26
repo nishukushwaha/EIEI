@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EIEI Services</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav-inner">
+      <span class="logo">EIEI</span>
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#programs">Programs</a>
+        <button id="contactBtn">Contact</button>
+        <button id="themeToggle" class="theme-toggle">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO WITH CAROUSEL -->
+  <!-- FULLSCREEN HERO CAROUSEL -->
+<section class="hero-carousel fade-in">
+  <div class="carousel">
+    <div class="slide active" style="background-image: url('images/slide1.jpg')">
+      <div class="slide-content">
+        <h1>Early intervention,<br>designed with care.</h1>
+        <p>Inclusive services that empower children and families.</p>
+      </div>
+    </div>
+
+    <div class="slide" style="background-image: url('images/slide2.jpg')">
+      <div class="slide-content">
+        <h1>Supporting educators<br>and communities.</h1>
+        <p>Professional development rooted in inclusion.</p>
+      </div>
+    </div>
+
+    <div class="slide" style="background-image: url('images/slide3.jpg')">
+      <div class="slide-content">
+        <h1>Every child deserves<br>to thrive.</h1>
+        <p>Human-centered education from the very beginning.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENQUIRY FORM OVERLAY -->
+  <div class="enquiry-box">
+    <h3>Enquire Now</h3>
+    <form class="enquiry-form" onsubmit="handleEnquiry(event)">
+      <input type="text" placeholder="Full Name" required />
+      <input type="email" placeholder="Email Address" required />
+      <input type="tel" placeholder="Phone (optional)" />
+      <textarea placeholder="How can we help?" required></textarea>
+      <button type="submit" class="primary-btn">Submit</button>
+    </form>
+  </div>
+</section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section slide-up">
+    <h2>The Education Institute for Early Intervention (EIEI) </h2>
+    <p>
+      We reshape learning by fostering inclusivity and equipping community programs, professionals, and families with the necessary support, resources, training and development to uplift every child with diverse abilities, setting the highest standard in special education, early childhood development, and life-time success!
+    </p>
+  </section>
+
+  <!-- PROGRAMS -->
+  <section id="programs" class="section light">
+    <div class="cards">
+      <div class="card reveal">
+        <h3>Early Intervention</h3>
+        <p>Specialized classroom and in-home services for ages 3–5.</p>
+      </div>
+      <div class="card reveal">
+        <h3>Professional Training</h3>
+        <p>Coaching and development for educators and providers.</p>
+      </div>
+      <div class="card reveal">
+        <h3>Family Support</h3>
+        <p>Resources, advocacy, and guidance for families.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS SECTION -->
+<section class="section testimonials-section section-light">
+  <h2>What Our Clients Say</h2>
+  <div class="cards testimonials">
+    <div class="card">
+      <p>"The team is amazing! Our child has grown so much in confidence."</p>
+      <h3>- Jane D.</h3>
+    </div>
+    <div class="card">
+      <p>"Professional, caring, and highly effective services."</p>
+      <h3>- Michael S.</h3>
+    </div>
+    <div class="card">
+      <p>"Our staff training sessions were insightful and practical."</p>
+      <h3>- Sarah L.</h3>
+    </div>
+  </div>
+</section>
+
+  <!-- FAQ SECTION -->
+<section class="section faq-section">
+  <h2>Frequently Asked Questions</h2>
+  <div class="faq">
+    <div class="faq-item">
+      <button class="faq-question">What age groups do you serve?</button>
+      <div class="faq-answer">We provide services for children from birth to 12 years, focusing on early intervention and developmental support.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">Do you offer online sessions?</button>
+      <div class="faq-answer">Yes, we provide both in-person and virtual sessions for families and educators.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">How can I book an assessment?</button>
+      <div class="faq-answer">You can fill out the enquiry form above or contact our team directly via the contact section below.</div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- CONTACT SECTION -->
+<section class="section contact-section">
+  <h2>Contact Us</h2>
+  <div class="contact-content">
+    <form class="contact-form" onsubmit="handleContact(event)">
+      <input type="text" placeholder="Full Name" required />
+      <input type="email" placeholder="Email Address" required />
+      <textarea placeholder="Your Message" required></textarea>
+      <button type="submit" class="primary-btn">Send Message</button>
+    </form>
+    <div class="contact-info">
+      <p><strong>Address:</strong> 123 Learning St, City, Country</p>
+      <p><strong>Email:</strong> info@eieiservices.com</p>
+      <p><strong>Phone:</strong> +1 234 567 8900</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 EIEI Services. All rights reserved.</p>
+  <p>
+    <a href="#" title="Privacy Policy">Privacy Policy</a> | 
+    <a href="#" title="Terms of Service">Terms of Service</a> | 
+    <a href="#contact" title="Contact">Contact</a>
+  </p>
+</footer>
+
+<script>
+  // Enquiry form handler
+  function handleEnquiry(event) {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.querySelector('input[type="text"]').value.trim();
+    const email = form.querySelector('input[type="email"]').value.trim();
+    const message = form.querySelector('textarea').value.trim();
+    
+    if (name && email && message) {
+      console.log("Enquiry submitted:", { name, email, message });
+      form.reset();
+      alert("Thank you! We'll be in touch soon.");
+    } else {
+      alert("Please fill in all required fields.");
+    }
+  }
+  
+  // Contact form handler
+  function handleContact(event) {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.querySelector('input[type="text"]').value.trim();
+    const email = form.querySelector('input[type="email"]').value.trim();
+    const message = form.querySelector('textarea').value.trim();
+    
+    if (name && email && message) {
+      console.log("Contact submitted:", { name, email, message });
+      form.reset();
+      alert("Thank you! We'll respond shortly.");
+    } else {
+      alert("Please fill in all required fields.");
+    }
+  }
+</script>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
