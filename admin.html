@@ -6,6 +6,7 @@
   <title>EIEI Admin Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="https://accounts.google.com/gsi/client"></script>
   <style>
     .admin-container {
       min-height: 100vh;
@@ -198,65 +199,121 @@
   <div class="admin-container">
     <div class="admin-content">
       <div class="admin-header">
-        <h1>Admin Portal</h1>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+        <h1>Admin Portal - Google Drive Gallery</h1>
+        <div id="authContainer"></div>
       </div>
 
-      <div class="upload-section">
-        <h2>Upload Gallery Images</h2>
-        <div class="success-message" id="successMessage">✓ Image uploaded successfully!</div>
+      <div id="adminPanel" style="display: none;">
+        <div class="upload-section">
+          <h2>Upload Gallery Images to Google Drive</h2>
+          <div class="success-message" id="successMessage">✓ Image uploaded successfully!</div>
 
-        <form class="upload-form" id="uploadForm">
-          <div class="form-group">
-            <label for="imageInput">Select Images (PNG, JPG, GIF)</label>
-            <div class="file-input-wrapper">
-              <input 
-                type="file" 
-                id="imageInput" 
-                accept="image/*" 
-                multiple
-              />
-              <label for="imageInput" class="file-input-label">
-                📁 Click to select or drag images here
-              </label>
+          <form class="upload-form" id="uploadForm">
+            <div class="form-group">
+              <label for="imageInput">Select Images (PNG, JPG, GIF)</label>
+              <div class="file-input-wrapper">
+                <input 
+                  type="file" 
+                  id="imageInput" 
+                  accept="image/*" 
+                  multiple
+                />
+                <label for="imageInput" class="file-input-label">
+                  📁 Click to select or drag images here
+                </label>
+              </div>
             </div>
-          </div>
-          <button type="submit" class="primary-btn" style="max-width: 300px;">Upload Images</button>
-        </form>
+            <button type="submit" class="primary-btn" style="max-width: 300px;" id="uploadBtn">Upload Images</button>
+            <div id="uploadProgress" style="display: none; margin-top: 1rem; color: var(--text-muted);">
+              Uploading: <span id="progressText">0</span>%
+            </div>
+          </form>
 
-        <div class="image-count" id="imageCount">No images uploaded yet</div>
+          <div class="image-count" id="imageCount">Loading images...</div>
 
-        <h3 style="margin-top: 2rem; color: var(--brand-blue);">Uploaded Images</h3>
-        <div class="gallery-preview" id="galleryPreview"></div>
+          <h3 style="margin-top: 2rem; color: var(--brand-blue);">Images in Google Drive Folder</h3>
+          <div class="gallery-preview" id="galleryPreview"></div>
+        </div>
+      </div>
+
+      <div id="loginPrompt" style="text-align: center; padding: 2rem;">
+        <h2 style="color: var(--brand-blue); margin-bottom: 1rem;">Sign in with Google</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Please sign in to manage gallery images</p>
+        <div id="googleSignInButton"></div>
       </div>
     </div>
   </div>
 
   <script>
-    // Admin authentication
-    function checkAdmin() {
-      const isLoggedIn = localStorage.getItem('adminLoggedIn');
-      if (!isLoggedIn) {
-        showLoginPrompt();
+    // Replace with your actual Google Drive folder ID
+    const FOLDER_ID = 'YOUR_GOOGLE_DRIVE_FOLDER_ID'; // You'll set this up
+    const CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'; // You'll set this up
+    const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+    let tokenClient;
+    let accessToken = null;
+
+    // Initialize Google Sign-In
+    function initializeGoogleSignIn() {
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('googleSignInButton'),
+        { theme: 'outline', size: 'large' }
+      );
+
+      // Check if already signed in
+      checkAuthStatus();
+    }
+
+    function handleCredentialResponse(response) {
+      // This is for ID token (not access token)
+      // We'll use the Authorization Code flow for Drive API
+      requestAccessToken();
+    }
+
+    function requestAccessToken() {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (tokenResponse) => {
+          accessToken = tokenResponse.access_token;
+          showAdminPanel();
+          loadGalleryImages();
+        }
+      });
+
+      tokenClient.requestAccessToken({ prompt: 'consent' });
+    }
+
+    function checkAuthStatus() {
+      const savedToken = localStorage.getItem('googleDriveToken');
+      if (savedToken) {
+        accessToken = savedToken;
+        showAdminPanel();
+        loadGalleryImages();
       }
     }
 
-    function showLoginPrompt() {
-      const password = prompt('Enter admin password:');
-      if (password === 'admin123') { // Simple password - change this!
-        localStorage.setItem('adminLoggedIn', 'true');
-        location.reload();
-      } else if (password !== null) {
-        alert('Incorrect password');
-        location.href = 'index.html';
-      } else {
-        location.href = 'index.html';
-      }
+    function showAdminPanel() {
+      document.getElementById('loginPrompt').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      
+      const authDiv = document.getElementById('authContainer');
+      authDiv.innerHTML = `
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      `;
+
+      localStorage.setItem('googleDriveToken', accessToken);
     }
 
     function logout() {
-      localStorage.removeItem('adminLoggedIn');
-      location.href = 'index.html';
+      accessToken = null;
+      localStorage.removeItem('googleDriveToken');
+      location.reload();
     }
 
     // File upload handling
@@ -265,6 +322,9 @@
     const galleryPreview = document.getElementById('galleryPreview');
     const successMessage = document.getElementById('successMessage');
     const imageCount = document.getElementById('imageCount');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressText = document.getElementById('progressText');
 
     // Drag and drop
     const fileLabel = document.querySelector('.file-input-label');
@@ -285,38 +345,59 @@
       fileLabel.style.background = '';
       fileLabel.style.color = '';
       imageInput.files = e.dataTransfer.files;
-      uploadImages();
+      uploadFiles();
     });
 
     // Upload form submission
     uploadForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      uploadImages();
+      uploadFiles();
     });
 
-    function uploadImages() {
+    function uploadFiles() {
       const files = Array.from(imageInput.files);
       if (files.length === 0) return;
 
-      files.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const base64 = e.target.result;
-          const images = JSON.parse(localStorage.getItem('galleryImages') || '[]');
-          images.push({
-            id: Date.now() + index,
-            data: base64,
-            name: file.name
-          });
-          localStorage.setItem('galleryImages', JSON.stringify(images));
-          
-          if (index === files.length - 1) {
-            imageInput.value = '';
-            showSuccessMessage();
-            renderGalleryPreview();
-          }
+      uploadBtn.disabled = true;
+      uploadProgress.style.display = 'block';
+
+      let uploaded = 0;
+      files.forEach((file) => {
+        const formData = new FormData();
+        const metadata = {
+          name: file.name,
+          mimeType: file.type,
+          parents: [FOLDER_ID]
         };
-        reader.readAsDataURL(file);
+        formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+        formData.append('file', file);
+
+        fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+          method: 'POST',
+          headers: new Headers({ 'Authorization': 'Bearer ' + accessToken }),
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            uploaded++;
+            progressText.textContent = Math.round((uploaded / files.length) * 100);
+            
+            if (uploaded === files.length) {
+              imageInput.value = '';
+              uploadBtn.disabled = false;
+              uploadProgress.style.display = 'none';
+              progressText.textContent = '0';
+              showSuccessMessage();
+              setTimeout(() => loadGalleryImages(), 1000);
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Upload error:', error);
+          alert('Error uploading file: ' + file.name);
+          uploadBtn.disabled = false;
+          uploadProgress.style.display = 'none';
+        });
       });
     }
 
@@ -327,29 +408,61 @@
       }, 3000);
     }
 
-    function renderGalleryPreview() {
-      const images = JSON.parse(localStorage.getItem('galleryImages') || '[]');
+    function loadGalleryImages() {
+      imageCount.textContent = 'Loading images...';
+      
+      fetch(`https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+trashed=false+and+mimeType+contains+'image'&spaces=drive&fields=files(id,name,webViewLink,webContentLink,thumbnailLink)&pageSize=50`, {
+        method: 'GET',
+        headers: new Headers({ 'Authorization': 'Bearer ' + accessToken })
+      })
+      .then(response => response.json())
+      .then(data => {
+        renderGalleryPreview(data.files || []);
+      })
+      .catch(error => {
+        console.error('Error loading images:', error);
+        imageCount.textContent = 'Error loading images. Make sure folder ID is correct.';
+      });
+    }
+
+    function renderGalleryPreview(files) {
       galleryPreview.innerHTML = '';
 
-      images.forEach(image => {
+      if (files.length === 0) {
+        updateImageCount(0);
+        return;
+      }
+
+      files.forEach(file => {
         const div = document.createElement('div');
         div.className = 'preview-item';
+        
+        // Use thumbnail for preview
+        const imageUrl = file.thumbnailLink ? file.thumbnailLink.replace('=s220', '=s400') : file.webContentLink;
+        
         div.innerHTML = `
-          <img src="${image.data}" alt="${image.name}">
-          <button class="delete-btn" onclick="deleteImage(${image.id})">×</button>
+          <img src="${imageUrl}" alt="${file.name}">
+          <button class="delete-btn" onclick="deleteImage('${file.id}')">×</button>
         `;
         galleryPreview.appendChild(div);
       });
 
-      updateImageCount(images.length);
+      updateImageCount(files.length);
     }
 
-    function deleteImage(id) {
-      if (confirm('Delete this image?')) {
-        let images = JSON.parse(localStorage.getItem('galleryImages') || '[]');
-        images = images.filter(img => img.id !== id);
-        localStorage.setItem('galleryImages', JSON.stringify(images));
-        renderGalleryPreview();
+    function deleteImage(fileId) {
+      if (confirm('Delete this image from Google Drive?')) {
+        fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
+          method: 'DELETE',
+          headers: new Headers({ 'Authorization': 'Bearer ' + accessToken })
+        })
+        .then(() => {
+          loadGalleryImages();
+        })
+        .catch(error => {
+          console.error('Error deleting image:', error);
+          alert('Error deleting image');
+        });
       }
     }
 
@@ -357,13 +470,12 @@
       if (count === 0) {
         imageCount.textContent = 'No images uploaded yet';
       } else {
-        imageCount.textContent = `${count} image${count !== 1 ? 's' : ''} uploaded`;
+        imageCount.textContent = `${count} image${count !== 1 ? 's' : ''} in Google Drive folder`;
       }
     }
 
-    // Initialize
-    checkAdmin();
-    renderGalleryPreview();
+    // Initialize when page loads
+    window.addEventListener('load', initializeGoogleSignIn);
   </script>
 
 </body>

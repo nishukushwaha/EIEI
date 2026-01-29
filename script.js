@@ -60,19 +60,56 @@ if ("IntersectionObserver" in window) {
 }
 
 // ==================
-// DARK MODE
+// DARK MODE (AUTO-SCHEDULE)
 // ==================
 const toggle = document.getElementById("themeToggle");
 const THEME_KEY = "app-theme";
+const AUTO_THEME_KEY = "app-theme-auto";
 
-// Initialize theme from localStorage or system preference
+// Determine theme based on time of day
+// Light mode: 6 AM - 6 PM (06:00 - 18:00)
+// Dark mode: 6 PM - 6 AM (18:00 - 06:00)
+function getThemeByTime() {
+  const hour = new Date().getHours();
+  return (hour >= 6 && hour < 18) ? "light" : "dark";
+}
+
+// Initialize theme from localStorage, or automatically based on time
 function initTheme() {
   const saved = localStorage.getItem(THEME_KEY);
-  if (saved) {
-    document.documentElement.setAttribute("data-theme", saved);
-  } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    document.documentElement.setAttribute("data-theme", "dark");
+  const isAutoMode = localStorage.getItem(AUTO_THEME_KEY) !== "false";
+  
+  let theme;
+  if (saved && !isAutoMode) {
+    // If user manually selected a theme and disabled auto, use that
+    theme = saved;
+  } else {
+    // Auto mode: use time-based theme
+    theme = getThemeByTime();
+    localStorage.setItem(AUTO_THEME_KEY, "true");
   }
+  
+  document.documentElement.setAttribute("data-theme", theme);
+}
+
+// Update theme periodically and when time changes
+function setupAutoThemeUpdate() {
+  let lastHour = new Date().getHours();
+  
+  setInterval(() => {
+    const currentHour = new Date().getHours();
+    // Check if we've crossed into a different day period
+    if ((lastHour < 6 && currentHour >= 6) || 
+        (lastHour >= 6 && lastHour < 18 && currentHour >= 18) ||
+        (lastHour >= 18 && currentHour < 6)) {
+      const isAutoMode = localStorage.getItem(AUTO_THEME_KEY) !== "false";
+      if (isAutoMode) {
+        const newTheme = getThemeByTime();
+        document.documentElement.setAttribute("data-theme", newTheme);
+      }
+      lastHour = currentHour;
+    }
+  }, 60000); // Check every minute
 }
 
 if (toggle) {
@@ -81,10 +118,12 @@ if (toggle) {
     const newTheme = isDark ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", newTheme);
     localStorage.setItem(THEME_KEY, newTheme);
+    localStorage.setItem(AUTO_THEME_KEY, "false"); // Disable auto mode when user manually toggles
   });
 }
 
 initTheme();
+setupAutoThemeUpdate();
 
 // ==================
 // FAQ TOGGLE
