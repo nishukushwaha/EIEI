@@ -25,6 +25,24 @@ if (contactBtn) {
 }
 
 // ==================
+// MOBILE NAV SETUP
+// ==================
+function setupMobileNav() {
+  const menuToggle = document.getElementById("menuToggle");
+  const nav = document.querySelector("header nav");
+
+  if (menuToggle && nav) {
+    menuToggle.addEventListener("click", () => {
+      nav.classList.toggle("active");
+    });
+    // Close nav when a link is clicked
+    nav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => nav.classList.remove("active"));
+    });
+  }
+}
+
+// ==================
 // MOBILE NAV
 // ==================
 const menuToggle = document.getElementById("menuToggle");
@@ -122,8 +140,11 @@ if (toggle) {
   });
 }
 
-initTheme();
-setupAutoThemeUpdate();
+// Initialize theme on page load
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  setupAutoThemeUpdate();
+});
 
 // ==================
 // FAQ TOGGLE
@@ -139,3 +160,41 @@ document.querySelectorAll(".faq-question").forEach(btn => {
   });
 });
 
+// ==================
+// HOME LINK VISIBILITY
+// ==================
+function toggleHomeLink() {
+  const homeLink = document.getElementById("navHome");
+  if (!homeLink) return;
+  
+  // Check if we're on the homepage
+  const currentPath = window.location.pathname;
+  const isHomepage = currentPath.endsWith("index.html") || currentPath.endsWith("/") || currentPath === "";
+  
+  if (isHomepage) {
+    homeLink.classList.remove("show");
+  } else {
+    homeLink.classList.add("show");
+  }
+}
+
+// Call on page load and after components load
+document.addEventListener("DOMContentLoaded", toggleHomeLink);
+window.addEventListener("load", toggleHomeLink);
+
+// ==================
+// NEWSLETTER SIGNUP
+// ==================
+function handleNewsletterSignup(event) {
+  event.preventDefault();
+  const form = event.target;
+  const email = form.querySelector(".newsletter-input").value.trim();
+  
+  if (email) {
+    console.log("Newsletter signup:", { email });
+    form.reset();
+    alert("🎉 Thank you for subscribing! Check your email for updates.");
+  } else {
+    alert("Please enter a valid email address.");
+  }
+}

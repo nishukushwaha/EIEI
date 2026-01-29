@@ -9,22 +9,8 @@
 </head>
 <body>
 
-  <!-- NAV -->
-  <header class="nav">
-    <div class="nav-inner">
-      <a href="index.html" class="logo-link">
-        <img src="images/logo.png" alt="EIEI Logo" class="logo">
-      </a>
-      <button class="menu-toggle" id="menuToggle">☰</button>
-      <nav>
-        <a href="index.html#about">About</a>
-        <a href="services.html">Services</a>
-        <a href="career-opportunities.html">Careers</a>
-        <a href="contact-us.html">Contact</a>
-        <button id="themeToggle" class="theme-toggle">☾</button>
-      </nav>
-    </div>
-  </header>
+  <!-- HEADER CONTAINER -->
+  <div id="header-container"></div>
 
   <!-- SERVICES HEADER -->
   <div class="services-header">
@@ -198,24 +184,14 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>&copy; 2025 EIEI Services. All rights reserved.</p>
-    <p>
-      <a href="#" title="Privacy Policy">Privacy Policy</a> | 
-      <a href="#" title="Terms of Service">Terms of Service</a> | 
-      <a href="contact-us.html" title="Contact">Contact</a> | 
-      <a href="admin-programs.html" title="Admin Portal">Admin</a>
-    </p>
-    <div style="margin-top: 1rem; text-align: center;">
-      <p style="font-size: 0.9rem; color: var(--text-muted);">
-        The Education Institute for Early Intervention (EIEI)<br>
-        4704 Leiper Street, Philadelphia, PA 19124<br>
-        Phone: 484-501-9101 | Email: admin@eiforei.org
-      </p>
-    </div>
-  </footer>
+  <!-- FOOTER CONTAINER -->
+  <div id="footer-container"></div>
 
+  <script src="components/header.js"></script>
+  <script src="components/footer.js"></script>
+  <script src="components/loader.js"></script>
   <script src="script.js"></script>
-</body>
-</html>
+  <script>
+    // Load components when DOM is ready
+    document.addEventListener('DOMContentLoaded', loadComponents);
+  </script>
