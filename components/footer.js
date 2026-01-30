@@ -62,6 +62,7 @@ function createFooter() {
         <!-- Footer Social & Admin -->
         <div class="footer-bottom">
           <div class="footer-left">
+          <p>Non-Discrimination in Services Policy Statement: Admissions, the provisions of services, and referrals of clients shall be made without regard to race (to include hair type, hair texture, or hair style), color, religious creed (to include all aspects of religious observances and practice, as well as belief), disability, ancestry, national origin (including Limited English Proficiency), age (40 and over), or sex (to include pregnancy status, childbirth status, breastfeeding status, sex assigned at birth). Program services shall be made accessible to eligible persons with disabilities through the most practical and economically feasible methods available. These methods include, but are not limited to, equipment redesign, the provision of aides and the use of alternative service delivery locations. Structural modifications shall be considered only as a last resort among available methods.</p
             <p>&copy; 2025 EIEI Services. All rights reserved.</p>
             <div class="footer-links">
               <a href="#" title="Privacy Policy">Privacy Policy</a> | 

@@ -1,3 +1,68 @@
+# Troubleshooting “400 Bad Request” for Google Sign-In
+
+If you encounter a 400 error during Google Sign-In, follow this checklist:
+
+## Browser Troubleshooting
+- **Clear browser cache and cookies** (for “All time”)
+- **Try Incognito/Private mode**
+- **Disable all browser extensions** and try again
+- **Try a different browser** (Chrome, Firefox, Edge, Safari)
+- **Check your computer’s date and time** (should be correct and auto-synced)
+- **Flush DNS cache**
+   - Mac: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
+   - Windows: `ipconfig /flushdns`
+- **Check your internet connection** (should be stable)
+
+## Developer/Configuration Troubleshooting
+- **OAuth client type:** Must be “Web application” in Google Cloud Console
+- **Authorized JavaScript origins:** Must include your site (e.g., `http://localhost:8000`, `https://yourdomain.com`)
+- **Authorized redirect URIs:** Must be correct (if used)
+- **Client ID:** Must match exactly in your code and Cloud Console
+- **OAuth consent screen:** Must be published and all required fields filled
+- **Google Drive API:** Must be enabled for your project
+- **Folder ID:** Use only the folder ID, not the full URL
+- **API scope:** Should be `https://www.googleapis.com/auth/drive.file`
+- **Token flow:** Use access token from OAuth2 flow, not ID token
+- **No iframes:** Do not embed Google Sign-In in an iframe from another domain
+- **Check for quota issues** in Google Cloud Console (rare)
+
+## If the Error Persists
+- **Check the browser console** for a detailed error message (e.g., “origin_mismatch”, “redirect_uri_mismatch”)
+- **Share the exact error message** for more targeted help
+
+---
+# Troubleshooting 400 Errors on Google Sign-In
+
+If you see a 400 error when signing in with Google, check the following:
+
+## 1. OAuth Client Setup
+- Go to [Google Cloud Console](https://console.cloud.google.com/)
+- Navigate to **APIs & Services > Credentials**
+- Your OAuth 2.0 Client ID must be of type **Web application**
+- The **Authorized redirect URIs** must include:
+   - `http://localhost:8000/admin.html` (for local testing)
+   - Your production URL, e.g. `https://yourdomain.com/admin.html`
+- The **Client ID** in your code must match the one shown in the Cloud Console
+
+## 2. OAuth Consent Screen
+- Go to **APIs & Services > OAuth consent screen**
+- Make sure the consent screen is **published**
+- Fill in all required fields (app name, support email, developer contact)
+
+## 3. Folder ID Usage
+- In your code, use only the folder ID (e.g. `1bjif6GZ65LnWx_X3vOnWR-xGeQHmC0N_`), not the full Google Drive URL
+
+## 4. API Scopes
+- The scope in your code should match the API you need, e.g. `https://www.googleapis.com/auth/drive.file`
+
+## 5. Token Flow
+- Use the access token from the OAuth2 flow for Drive API calls
+- Do **not** use the ID token from the Google Identity Services sign-in for Drive API
+
+## 6. API Enabled
+- Make sure **Google Drive API** is enabled for your project in the Cloud Console
+
+---
 # Google Drive Gallery Setup Guide
 
 This guide will help you set up Google Drive integration for the EIEI website gallery.
@@ -25,10 +90,12 @@ This guide will help you set up Google Drive integration for the EIEI website ga
    - `https://yourdomain.com` (replace with your actual domain)
    - `https://yourdomain.com/admin.html`
 5. Copy the **Client ID** and save it
+6. 35109919396-prtb83ncq3t7j7h4c3qg1bs6q9e8hgkl.apps.googleusercontent.com
 
 ### For Main Website (read-only):
 1. Go to "Credentials" → "Create Credentials" → "API Key"
 2. Copy the **API Key** and save it
+API : AIzaSyCrNI5O5pL4aUYznAXq7LYCczvJ1fCBDzw
 3. Restrict it to only "Google Drive API"
 
 ## Step 4: Create a Google Drive Folder
@@ -38,7 +105,7 @@ This guide will help you set up Google Drive integration for the EIEI website ga
 3. Right-click the folder → "Get link"
 4. Copy the folder ID from the URL
    - URL looks like: `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
-   - Copy the `FOLDER_ID_HERE` part
+   - Copy the `https://drive.google.com/drive/folders/1bjif6GZ65LnWx_X3vOnWR-xGeQHmC0N_?usp=share_link` part
 
 ## Step 5: Update Your Website Files
 

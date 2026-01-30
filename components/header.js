@@ -10,7 +10,7 @@ function createHeader() {
         <button class="menu-toggle" id="menuToggle">☰</button>
         <nav>
           <a href="index.html" class="nav-home" id="navHome">Home</a>
-          <a href="index.html#about">About</a>
+          <a href="about.html">About</a>
           <a href="services.html">Services</a>
           <a href="career-opportunities.html">Careers</a>
           <a href="contact-us.html">Contact</a>
